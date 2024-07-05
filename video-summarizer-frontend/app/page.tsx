@@ -1,8 +1,12 @@
 "use client"
-const backendURL = "http://localhost:8000";
-import { useState, useEffect, use } from "react";
+
+import React from 'react'
+import { useState, useRef } from "react";
+import ReactPlayer from 'react-player'
 import { SiGoogledisplayandvideo360 } from "react-icons/si";
 
+
+const backendURL = "http://localhost:8000";
 interface SectionsTimeStamps {
   timestamps: [number, number];
   text: string;
@@ -21,6 +25,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [summary, setSummary] = useState<VideoSummary | null>(null);
   const [showTranscript, setShowTranscript] = useState<boolean>(false);
+  const playerRef = useRef<ReactPlayer>(null);
+
   const testfunction = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSummary({summary: "This is a summary", sections_timestamps: [{timestamps: [0, 10], text: "This is a section", summary: "This is a summary"}, {timestamps: [10, 20], text: "This is a section", summary: "This is a summary"}, {timestamps: [20, 30], text: "This is a section", summary: "This is a summary"}]});
@@ -56,15 +62,21 @@ export default function Home() {
       }  
       else {
         console.error("Request to backend failed");
+        alert("Request failed!")
       }
     } catch (error) {
       console.error(error);
+      alert("Request failed!")
     }
     setIsLoading(false);
   }
 
   const handleToggleShowTranscript = () => {
     setShowTranscript(!showTranscript);
+  }
+
+  const handleSeekTo = (timestamp: number) => {
+    playerRef.current?.seekTo(timestamp);
   }
 
   const convertSecondsToMinutesAndSeconds = (totalSeconds: number): string => {
@@ -86,7 +98,7 @@ export default function Home() {
         <h1 className="text-4xl font-header font-bold text-black">Video Summarizer</h1>
       </div>
       <div className="w-full flex-col gap-10 place-items-center place-content-center justify-between font-sans lg:flex p-8">
-        <div className="flex w-3/4 flex-row gap-10 select-none">
+        <div className="flex w-3/4 justify-center flex-row gap-10 select-none">
           <div className="basis-1/3 flex-col space-y-5 border-white border-4 p-8 rounded-2xl h-fit shadow-xl hover:shadow-2xl shadow-teal-400/50 hover:shadow-white/70">
             <h2 className="text-2xl">Upload Video</h2>
             <form className="flex-row space-y-5 w-fit" onSubmit={handleFileSubmit}>
@@ -100,15 +112,18 @@ export default function Home() {
                 <button className="py-2 px-5 bg-teal-900 text-white font-semibold rounded-full shadow-md" disabled>Generating summary...</button>
               )}         
             </form>
-          </div>        
-          <div className="basis-2/3 p-4 bg-white rounded-2xl shadow-xl hover:shadow-2xl shadow-teal-400/50 hover:shadow-white/70">
-            <video width="1280" height="960" src={fileURL} video-type="video/mp4" muted controls preload="auto"/>
-          </div>
+          </div>   
+          {fileURL ? (  
+            <div className="basis-2/3 p-2.5 bg-white rounded-2xl shadow-xl hover:shadow-2xl shadow-teal-400/50 hover:shadow-white/70">
+              {/*<video width="1280" height="960" src={fileURL} video-type="video/mp4" muted controls preload="auto"/>*/}
+              <ReactPlayer ref={playerRef} url={fileURL} width="1280" height="960" muted controls pip/>
+            </div>
+          ) : null}
         </div>
         {summary ? (
-          <div className="flex-col w-3/4 content-start items-start place-content-stretch space-y-3 p-8 rounded-2xl shadow-xl hover:shadow-2xl shadow-teal-400/50 hover:shadow-white/70 border-white border-2 bg-black select-text">
+          <div className="flex-col w-3/4 content-start items-start place-content-stretch space-y-3 p-8 rounded-2xl shadow-xl hover:shadow-2xl shadow-teal-400/50 hover:shadow-white/70 border-white border-2 bg-black select-none">
             <h2 className="text-xl text-white">Summary</h2>
-            <p className="text-white">{summary.summary}</p>
+            <p className="text-white select-text">{summary.summary}</p>
             <div className="flex flex-row content-start align-middle gap-4 pt-3">
               <h2 className="text-xl text-white">Sections</h2>
               <label className="inline-flex items-center cursor-pointer">
@@ -130,12 +145,20 @@ export default function Home() {
               <tbody>
                 {summary.sections_timestamps.map((section_timestamp, index) => (
                   <tr key={index}>
-                    <td className="border-2 border-teal-500 px-2 py-2 rounded-lg">
-                      {`${convertSecondsToMinutesAndSeconds(section_timestamp.timestamps[0])} - ${convertSecondsToMinutesAndSeconds(section_timestamp.timestamps[1])}`}
+                    <td className="border-2 border-teal-500 px-2 py-2 rounded-lg flex flex-row justify-center">
+                      <p className="hover:text-rose-600" onClick={() => handleSeekTo(section_timestamp.timestamps[0])}>
+                      {convertSecondsToMinutesAndSeconds(section_timestamp.timestamps[0])}
+                      </p>
+                      &nbsp;
+                      <p>-</p>
+                      &nbsp;
+                      <p className="hover:text-rose-600" onClick={() => handleSeekTo(section_timestamp.timestamps[1])}>
+                      {convertSecondsToMinutesAndSeconds(section_timestamp.timestamps[1])}
+                      </p>
                     </td>
-                    <td className="border-2 border-teal-500 px-2 py-2 rounded-lg">{section_timestamp.summary}</td>
+                    <td className="border-2 border-teal-500 px-2 py-2 rounded-lg select-text">{section_timestamp.summary}</td>
                     {showTranscript ?
-                      <td className="border-2 border-teal-500 px-2 py-2 rounded-lg">{section_timestamp.text}</td>
+                      <td className="border-2 border-teal-500 px-2 py-2 rounded-lg select-text">{section_timestamp.text}</td>
                     : null}
                   </tr>
                 ))}
