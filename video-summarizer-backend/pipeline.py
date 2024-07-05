@@ -44,7 +44,7 @@ class VideoSummarizer:
     gc.collect()
     torch.cuda.empty_cache()
 
-    return {"summary": summary, "sections": sections_timestamps}
+    return {"summary": summary, "sections_timestamps": sections_timestamps}
   
 
   def generate_summary(self, transcript: str, llm: LlamaCPP):
@@ -78,7 +78,7 @@ Text: <text>{transcript}</text></instruction><|eot_id|>
 
 
   def generate_sections_timestamps(self, sections, word_data, llm: LlamaCPP):
-    timestamps = []
+    sections_timestamps = []
     word_index = 0
     words_time = []
     for segment in word_data["segments"]:
@@ -112,11 +112,11 @@ Text: <text>{transcript}</text></instruction><|eot_id|>
                 word_index += 1
         
         if section_start is not None and section_end is not None:
-            timestamps.append({"timestamps": (section_start, section_end), "text": section, "summary": summary})
+            sections_timestamps.append({"timestamps": (section_start, section_end), "text": section, "summary": summary})
         else:
-            timestamps.append({"timestamps": (None, None), "text": section, "summary": summary})
+            sections_timestamps.append({"timestamps": (None, None), "text": section, "summary": summary})
 
-    return timestamps
+    return sections_timestamps
 
 
 video_summarizer = VideoSummarizer(transcript_model_str="medium", llm_path="models\Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
