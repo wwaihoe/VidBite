@@ -15,6 +15,5 @@ Here’s what it offers:
 ## How it was built
 Frontend:
 - Next.js, React, Typescript, Tailwind CSS
-<br>
 Backend:
 - FastAPI, Uvicorn, Python, llama.cpp (w Llama-3-8b-Instruct), whisper-timestamped 
