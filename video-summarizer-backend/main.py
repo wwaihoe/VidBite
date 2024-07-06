@@ -3,6 +3,7 @@ from fastapi import FastAPI, File, UploadFile, Form
 from pipeline import video_summarizer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import os
 
 app = FastAPI()
 
@@ -28,11 +29,12 @@ def root():
 class SectionsTimeStamps(BaseModel):
     timestamps: tuple[int, int]
     text: str
-    summary: str
+    summary_short: str
+    summary_full: str
 
 class SummaryResponse(BaseModel):
     summary: str
-    sections_timestamps: list[SectionsTimeStamps]
+    sections_timestamps: list[SectionsTimeStamps] | None
 
 @app.post("/summarise")
 def summarise(file: UploadFile = File(...), response_model=SummaryResponse):
@@ -40,6 +42,9 @@ def summarise(file: UploadFile = File(...), response_model=SummaryResponse):
     with open(file_path, "wb+") as file_object:
         file_object.write(file.file.read())
     result = video_summarizer.summarize(file_path)
+    os.remove(file_path)
+    if result["sections_timestamps"] is not None:
+        print("Failed to generate sections")
     print("Summary complete")
     return result
 

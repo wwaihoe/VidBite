@@ -1,6 +1,7 @@
 import os
 import torch
 import gc
+import string
 from moviepy.editor import VideoFileClip
 from transcript_model import TranscriptionModel
 from llm import LlamaCPP
@@ -36,6 +37,9 @@ class VideoSummarizer:
     # Generate sections
     sections = self.generate_sections(transcript, llm)
 
+    if sections is None:
+      return {"summary": summary, "sections_timestamps": None}
+
     # Generate timestamps for sections
     sections_timestamps = self.generate_sections_timestamps(sections, result, llm)
 
@@ -51,7 +55,7 @@ class VideoSummarizer:
     # Summarize transcript
     summarize_prompt = f"""<|start_header_id|>user<|end_header_id|>
    
-<instruction>Summarise the following text: <text>{transcript}</text></instruction><|eot_id|> 
+<instruction>Summarise the following transcript of a video: <transcript>{transcript}</transcript></instruction><|eot_id|> 
 <|start_header_id|>assistant<|end_header_id|>
 
 <summary>"""
@@ -60,24 +64,35 @@ class VideoSummarizer:
     return summary
 
 
-  def generate_sections(self, transcript: str, llm: LlamaCPP):
+  def generate_sections(self, transcript: str, llm: LlamaCPP, max_tries: int=2):
     # Generate sections
     segment_prompt = f"""<|start_header_id|>user<|end_header_id|>
    
-<instruction>Split the following text into suitable sections verbatim with this: <section></section>""
-Text: <text>{transcript}</text></instruction><|eot_id|> 
+<instruction>Split the following transcript into suitable sections verbatim with these xml tags: "<section></section>" to demarcate each section in the transcript.
+<transcript>{transcript}</transcript>Each section should contain only the exact text found in the transcript.</instruction><|eot_id|> 
 <|start_header_id|>assistant<|end_header_id|>
 
 <section>"""
-    sections_str = llm.generate(segment_prompt)
-    sections = sections_str.split("</section>")
-    sections = [section.replace("<section>", "") for section in sections]
-    sections = [section.replace("\n", "") for section in sections]
-    sections = [section for section in sections if not section.isspace() and not section == ""]
-    return sections
+    
+    for i in range(max_tries):
+      sections_str = llm.generate(segment_prompt)
+      sections = sections_str.split("</section>")
+      sections = [section.replace("<section>", "") for section in sections]
+      sections = [section.replace("\n", "") for section in sections]
+      sections = [section.strip() for section in sections]
+      sections = [section for section in sections if not section.isspace() and not section == ""]
+      print(sections)
+      passed = True
+      for section in sections:
+        if not section in transcript:
+          passed = False
+          break
+      if passed:
+        return sections
+    return None
 
 
-  def generate_sections_timestamps(self, sections, word_data, llm: LlamaCPP):
+  def generate_sections_timestamps(self, sections: list[str], word_data: dict, llm: LlamaCPP):
     sections_timestamps = []
     word_index = 0
     words_time = []
@@ -86,16 +101,26 @@ Text: <text>{transcript}</text></instruction><|eot_id|>
     
     for section in sections:
         # Generate summaries for each section
-        summarize_prompt = f"""<|start_header_id|>user<|end_header_id|>
+        summarize_short_prompt = f"""<|start_header_id|>user<|end_header_id|>
    
-<instruction>Summarise the following text into a few words: <text>{section}</text></instruction><|eot_id|> 
+<instruction>Summarise the following transcript into a few words: <transcript>{section}</transcript></instruction><|eot_id|> 
 <|start_header_id|>assistant<|end_header_id|>
 
 <summary>"""
-        summary = llm.generate(summarize_prompt)
-        summary = summary.replace("</summary>", "")
+        summary_short = llm.generate(summarize_short_prompt)
+        summary_short = summary_short.replace("</summary>", "")
 
-        # Find the start and end timestamps for each section
+        # Generate summaries for each section
+        summarize_full_prompt = f"""<|start_header_id|>user<|end_header_id|>
+   
+<instruction>Summarise the following transcript: <transcript>{section}</transcript></instruction><|eot_id|> 
+<|start_header_id|>assistant<|end_header_id|>
+
+<summary>"""
+        summary_full = llm.generate(summarize_full_prompt)
+        summary_full = summary_full.replace("</summary>", "")
+
+        # Get start and end times for each section
         words = section.split()
         section_start = None
         section_end = None
@@ -103,7 +128,7 @@ Text: <text>{transcript}</text></instruction><|eot_id|>
         for word in words:
             while word_index < len(words_time):
                 current_word = words_time[word_index]
-                if current_word['text'].lower().strip('.,') == word.lower().strip('.,'):
+                if current_word['text'].lower().strip(string.punctuation) == word.lower().strip(string.punctuation):
                     if section_start is None:
                         section_start = current_word['start']
                     section_end = current_word['end']
@@ -112,10 +137,9 @@ Text: <text>{transcript}</text></instruction><|eot_id|>
                 word_index += 1
         
         if section_start is not None and section_end is not None:
-            sections_timestamps.append({"timestamps": (section_start, section_end), "text": section, "summary": summary})
+            sections_timestamps.append({"timestamps": (section_start, section_end), "text": section, "summary_short": summary_short, "summary_full": summary_full})
         else:
-            sections_timestamps.append({"timestamps": (None, None), "text": section, "summary": summary})
-
+            sections_timestamps.append({"timestamps": (None, None), "text": section, "summary_short": summary_short, "summary_full": summary_full})
     return sections_timestamps
 
 
