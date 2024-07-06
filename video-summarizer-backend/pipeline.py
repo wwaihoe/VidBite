@@ -8,7 +8,7 @@ from llm import LlamaCPP
 
 
 class VideoSummarizer:
-  def __init__(self, transcript_model_str: TranscriptionModel, llm_path: LlamaCPP):
+  def __init__(self, transcript_model_str: TranscriptionModel, llm_path: str):
     self.transcript_model_str = transcript_model_str
     self.llm_path = llm_path
 
