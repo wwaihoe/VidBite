@@ -2,11 +2,13 @@ from llama_cpp import Llama
 
 
 class LlamaCPP():
-  def __init__(self, model_path: str, **kwargs):
-    print(f"Loading model: {model_path}...")
-    self.model_path = model_path
-    self.llm = Llama(
-      model_path=self.model_path,
+  def __init__(self, repo_id: str, filename: str, **kwargs):
+    print(f"Loading model: {repo_id}/{filename}...")
+    self.repo_id = repo_id
+    self.filename = filename
+    self.llm = Llama.from_pretrained(
+      repo_id=self.repo_id,
+      filename=self.filename,
       n_gpu_layers=-1,
       seed=1234,
       n_ctx=4096,

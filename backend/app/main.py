@@ -4,6 +4,7 @@ from pipeline import video_summarizer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
+from pathlib import Path
 
 app = FastAPI()
 
@@ -38,6 +39,7 @@ class SummaryResponse(BaseModel):
 
 @app.post("/summarise")
 def summarise(file: UploadFile = File(...), response_model=SummaryResponse):
+    Path("./public/uploads").mkdir(parents=True, exist_ok=True)
     file_path = f"./public/uploads/{file.filename}"
     with open(file_path, "wb+") as file_object:
         file_object.write(file.file.read())
@@ -50,10 +52,16 @@ def summarise(file: UploadFile = File(...), response_model=SummaryResponse):
 
 @app.post("/upload")
 def upload_file(file: UploadFile):
-    file_path = f"./public/uploads/{file.filename}"
+    Path("./public/uploads").mkdir(parents=True, exist_ok=True)
+    file_path = f"./public/uploads/{file.filename}"    
     with open(file_path, "wb+") as file_object:
         file_object.write(file.file.read())
     return {"message": "Uploaded file: " + file.filename}
+
+@app.post("/chat")
+def chat(prompt: str = Form(...)):
+    result = video_summarizer.chat(prompt)
+    return {"response": result}
 
 
 

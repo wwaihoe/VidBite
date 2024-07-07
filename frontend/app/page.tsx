@@ -5,7 +5,7 @@ import { useState, useRef } from "react";
 import ReactPlayer from 'react-player'
 import { SiGoogledisplayandvideo360 } from "react-icons/si";
 
-
+// Change this to false if you want a wide video player
 const tall = true;
 const backendURL = "http://localhost:8000";
 const vidDimensions = tall? {"width": 360, "height": 640}: {"width": 854, "height": 480} ;

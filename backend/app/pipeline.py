@@ -8,10 +8,10 @@ from llm import LlamaCPP
 
 
 class VideoSummarizer:
-  def __init__(self, transcript_model_str: str, llm_path: str):
+  def __init__(self, transcript_model_str: str, llm_repo_id: str, llm_filename: str):
     self.transcript_model_str = transcript_model_str
-    self.llm_path = llm_path
-
+    self.llm_repo_id = llm_repo_id
+    self.llm_filename = llm_filename
 
   def summarize(self, video_path: str, language: str="en"):
     # Create a video clip object
@@ -31,7 +31,7 @@ class VideoSummarizer:
     torch.cuda.empty_cache()
 
     # Generate summary
-    llm = LlamaCPP(model_path=self.llm_path)
+    llm = LlamaCPP(repo_id=self.llm_repo_id, filename=self.llm_filename)
     summary = self.generate_summary(transcript, llm)
     
     # Generate sections
@@ -74,22 +74,27 @@ class VideoSummarizer:
 
 <section>"""
     
+    # Check if the section words are in the transcript and retry if not
+    transcript_words = [word.lower().strip(string.punctuation) for word in transcript.split()]
     for i in range(max_tries):
       sections_str = llm.generate(segment_prompt)
-      sections = sections_str.split("</section>")
-      sections = [section.replace("<section>", "") for section in sections]
-      sections = [section.replace("\n", "") for section in sections]
-      sections = [section.strip() for section in sections]
+      sections_str = sections_str.replace("\n", "")
+      sections_str = sections_str.replace("</section>", "")
+      sections = sections_str.split("<section>")
       sections = [section for section in sections if not section.isspace() and not section == ""]
-      print(sections)
       passed = True
+      
       for section in sections:
-        if not section in transcript:
+        section_words = section.split()
+        section_words = [word.lower().strip(string.punctuation) for word in section_words]
+        check = all(word in transcript_words for word in section_words)
+        if not check:
           passed = False
           break
       if passed:
         return sections
-    return None
+      else:
+        return None
 
 
   def generate_sections_timestamps(self, sections: list[str], word_data: dict, llm: LlamaCPP):
@@ -143,5 +148,5 @@ class VideoSummarizer:
     return sections_timestamps
 
 
-video_summarizer = VideoSummarizer(transcript_model_str="medium", llm_path="models\Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
+video_summarizer = VideoSummarizer(transcript_model_str="medium", llm_repo_id="bartowski/Meta-Llama-3-8B-Instruct-GGUF", llm_filename="Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
 

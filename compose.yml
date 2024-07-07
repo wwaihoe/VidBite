@@ -1,0 +1,31 @@
+networks:
+  bridgenetwork: #define bridge network that connects containers together internally
+    driver: bridge
+
+services:
+  frontend: #web application frontend
+    build:
+      context: ./frontend
+    environment:
+      NODE_ENV: production
+    networks:
+      - bridgenetwork
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+
+  backend: #web application backend
+    build:
+      context: ./backend
+    networks:
+      - bridgenetwork
+    ports:
+      - 8000:8000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
