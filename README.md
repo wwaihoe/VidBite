@@ -10,10 +10,10 @@ This app would not only save users time but also enhance their content consumpti
 ## What it does
 VidBite is designed to streamline your video viewing experience by summarizing videos, segmenting them into easy-to-digest sections and also allowing users to ask a chatbot assistant questions about the video. 
 Here’s what it offers: 
-- Summarizes Videos: VidBite quickly analyzes the spoken content of videos and provides concise summaries that capture the essence of the video. This allows users to understand the key points without having to watch the entire clip.
-- Sections with Highlights: It divides videos into meaningful segments, each with a brief summary, making it easy to jump to specific parts of interest. This is especially useful for longer videos or tutorials where users may only be interested in certain sections.
-- Chat: Users can chat with a chatbot assistant to answer queries related to the video.
-- Accessibility: VidBite makes content more accessible by providing text summaries for videos, which can be particularly beneficial for users with hearing impairments or those in environments where they can’t play audio.
+- **Summarizes Videos:** VidBite quickly analyzes the spoken content of videos and provides concise summaries that capture the essence of the video. This allows users to understand the key points without having to watch the entire clip.
+- **Sections with Highlights:** It divides videos into meaningful segments, each with a brief summary, making it easy to jump to specific parts of interest. This is especially useful for longer videos or tutorials where users may only be interested in certain sections.
+- **Chat:** Users can chat with a chatbot assistant to answer queries related to the video.
+- **Accessibility:** VidBite makes content more accessible by providing text summaries for videos, which can be particularly beneficial for users with hearing impairments or those in environments where they can’t play audio.
 
 ## How to run
 1. `git clone https://github.com/wwaihoe/vidbite`
