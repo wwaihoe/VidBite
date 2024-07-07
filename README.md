@@ -20,7 +20,7 @@ Here’s what it offers:
 2. `cd vidbite`
 3. `docker compose up --build`
 
-Change value of tall variable in `frontend/app/page.tsx` to switch between tall and wide video aspect ratios.
+Change value of `tall` const in `frontend/app/page.tsx` to switch between tall and wide video aspect ratios.
 
 ## How it was built
 Frontend:
