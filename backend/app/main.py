@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, File, UploadFile, Form
 from pipeline import video_summarizer
+from chat import chat_model
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
@@ -37,6 +38,10 @@ class SummaryResponse(BaseModel):
     summary: str
     sections_timestamps: list[SectionsTimeStamps] | None
 
+class ChatRequest(BaseModel):
+    query: str
+    transcript: str
+
 @app.post("/summarise")
 def summarise(file: UploadFile = File(...), response_model=SummaryResponse):
     Path("./public/uploads").mkdir(parents=True, exist_ok=True)
@@ -45,7 +50,7 @@ def summarise(file: UploadFile = File(...), response_model=SummaryResponse):
         file_object.write(file.file.read())
     result = video_summarizer.summarize(file_path)
     os.remove(file_path)
-    if result["sections_timestamps"] is not None:
+    if result["sections_timestamps"] is None:
         print("Failed to generate sections")
     print("Summary complete")
     return result
@@ -59,8 +64,8 @@ def upload_file(file: UploadFile):
     return {"message": "Uploaded file: " + file.filename}
 
 @app.post("/chat")
-def chat(prompt: str = Form(...)):
-    result = video_summarizer.chat(prompt)
+def chat(request: ChatRequest):
+    result = chat_model.generate(request.query, request.transcript)
     return {"response": result}
 
 

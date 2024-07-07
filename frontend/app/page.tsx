@@ -4,11 +4,17 @@ import React from 'react'
 import { useState, useRef } from "react";
 import ReactPlayer from 'react-player'
 import { SiGoogledisplayandvideo360 } from "react-icons/si";
+import { IoChatboxEllipses } from "react-icons/io5";
+import { AiFillFileText } from "react-icons/ai";
+import Summary from "./components/summary";
+import Chat from "./components/chat";
+
 
 // Change this to false if you want a wide video player
 const tall = true;
+const vidDimensions = tall? {"width": 360, "height": 640}: {"width": 854, "height": 480};
+
 const backendURL = "http://localhost:8000";
-const vidDimensions = tall? {"width": 360, "height": 640}: {"width": 854, "height": 480} ;
 
 interface SectionsTimeStamps {
   timestamps: [number, number];
@@ -27,8 +33,11 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [fileURL, setFileURL] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showChat, setShowChat] = useState<boolean>(false);
   const [summary, setSummary] = useState<VideoSummary | null>(null);
-  const [showTranscript, setShowTranscript] = useState<boolean>(false);
+  const [transcript, setTranscript] = useState<string>("");
+  
+
   const playerRef = useRef<ReactPlayer>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
@@ -36,6 +45,7 @@ export default function Home() {
     event.preventDefault();
     setSummary({summary: "This is a summary", sections_timestamps: [{timestamps: [0, 10], text: "This is a section", summary_short: "Topic", summary_full: "This is a summary"}, {timestamps: [10, 20], text: "This is a section", summary_short: "Topic", summary_full: "This is a summary"}, {timestamps: [20, 30], text: "This is a section", summary_short: "Topic", summary_full: "This is a summary"}]});
   }
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];    
     if (file && file.type==='video/mp4') {
@@ -64,6 +74,7 @@ export default function Home() {
         const data = await response.json();
         setSummary(data);
         summaryRef.current?.scrollIntoView({behavior: "smooth"});
+        setTranscript(data.sections_timestamps.map((section: SectionsTimeStamps) => section.text).join(" "));
       }  
       else {
         console.error("Request to backend failed");
@@ -71,30 +82,15 @@ export default function Home() {
       }
     } catch (error) {
       console.error(error);
-      alert("Request failed!")
+      alert("Request failed!");
     }
     setIsLoading(false);
-  }
-
-  const handleToggleShowTranscript = () => {
-    setShowTranscript(!showTranscript);
   }
 
   const handleSeekTo = (timestamp: number) => {
     playerRef.current?.seekTo(timestamp);
   }
 
-  const convertSecondsToMinutesAndSeconds = (totalSeconds: number): string => {
-    // Ensure totalSeconds is an integer
-    totalSeconds = Math.floor(totalSeconds);
-  
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    // Pad seconds with leading zero if less than 10
-    const formattedSeconds = seconds.toString().padStart(2, '0');
-    
-    return `${minutes}:${formattedSeconds}`;
-  };
 
   return (
     <main className="flex min-h-screen flex-col place-items-center bg-gradient-to-br from-teal-500 to-rose-500 gap-3 text-base">
@@ -153,60 +149,41 @@ export default function Home() {
             className="flex flex-col w-3/4 space-y-3 p-8 rounded-2xl shadow-xl hover:shadow-2xl shadow-teal-400/50 hover:shadow-white/70 border-2 border-white bg-black select-none" 
             ref={summaryRef}
           >
-            <h2 className="text-xl text-white">Summary</h2>
-            <p className="text-white select-text">{summary.summary}</p>
-            {summary.sections_timestamps ? (
-              <div className="space-y-3">
-                <div className="flex flex-row items-center gap-4 pt-3">
-                  <h2 className="text-xl text-white">Sections</h2>
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input 
-                      onClick={handleToggleShowTranscript} 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                    />
-                    <div className="relative w-11 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 dark:bg-gray-700 peer-checked:bg-teal-400">
-                      <div className="absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full border border-gray-300 dark:border-gray-600 transition-transform peer-checked:translate-x-full rtl:peer-checked:translate-x-0 peer-checked:border-white"></div>
-                    </div>
-                    <span className="ml-2 text-sm font-medium text-white">Show Transcript</span>
-                  </label>
-                </div>           
-                <table className="w-full table-auto border-separate border-spacing-2 border-2 border-rose-600 rounded-lg">
-                  <thead>
-                    <tr>
-                      <th className="px-2 py-2 text-lg border-2 border-teal-500 rounded-lg">Time</th>
-                      <th className="px-2 py-2 text-lg border-2 border-teal-500 rounded-lg">Section</th>
-                      <th className="px-2 py-2 text-lg border-2 border-teal-500 rounded-lg">
-                        {showTranscript ? 'Transcript' : 'Summary'}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {summary.sections_timestamps.map((section_timestamp, index) => (
-                      <tr key={index}>
-                        <td className="px-2 py-2 flex border-2 border-teal-500 rounded-lg">
-                          <span className="hover:text-rose-600 cursor-pointer" onClick={() => handleSeekTo(section_timestamp.timestamps[0])}>
-                            {convertSecondsToMinutesAndSeconds(section_timestamp.timestamps[0])}
-                          </span>
-                          -
-                          <span className="hover:text-rose-600 cursor-pointer" onClick={() => handleSeekTo(section_timestamp.timestamps[1])}>
-                            {convertSecondsToMinutesAndSeconds(section_timestamp.timestamps[1])}
-                          </span>
-                        </td>
-                        <td className="px-2 py-2 border-2 border-teal-500 rounded-lg content-start select-text">{section_timestamp.summary_short}</td>
-                        <td className="px-2 py-2 border-2 border-teal-500 rounded-lg content-start select-text">
-                          {showTranscript ? section_timestamp.text : section_timestamp.summary_full}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <div className="border-b border-gray-200 dark:border-neutral-700">
+              {!showChat ? (
+              <nav className="flex space-x-1" aria-label="Tabs" role="tablist">
+                <button type="button" className="hs-tab-active:font-semibold hs-tab-active:border-white hs-tab-active:text-white py-4 px-1 inline-flex items-center gap-x-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-white focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 dark:hover:text-gray-200 active" id="tabs-with-underline-item-1" data-hs-tab="#tabs-with-underline-1" aria-controls="tabs-with-underline-1" role="tab" onClick={() => setShowChat(false)}>
+                  <AiFillFileText />
+                  Summary
+                </button>
+                <button type="button" className="hs-tab-active:font-semibold hs-tab-active:border-white hs-tab-active:text-white py-4 px-1 inline-flex items-center gap-x-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-white focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 dark:hover:text-gray-200" id="tabs-with-underline-item-2" data-hs-tab="#tabs-with-underline-2" aria-controls="tabs-with-underline-2" role="tab" onClick={() => setShowChat(true)}>
+                  <IoChatboxEllipses />
+                  Chat
+                </button>
+              </nav>
+              ) : (
+              <nav className="flex space-x-1" aria-label="Tabs" role="tablist">
+                <button type="button" className="hs-tab-active:font-semibold hs-tab-active:border-white hs-tab-active:text-white py-4 px-1 inline-flex items-center gap-x-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-white focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 dark:hover:text-gray-200" id="tabs-with-underline-item-1" data-hs-tab="#tabs-with-underline-1" aria-controls="tabs-with-underline-1" role="tab" onClick={() => setShowChat(false)}>
+                  <AiFillFileText />
+                  Summary
+                </button>
+                <button type="button" className="hs-tab-active:font-semibold hs-tab-active:border-white hs-tab-active:text-white py-4 px-1 inline-flex items-center gap-x-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-white focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 dark:hover:text-gray-200 active" id="tabs-with-underline-item-2" data-hs-tab="#tabs-with-underline-2" aria-controls="tabs-with-underline-2" role="tab" onClick={() => setShowChat(true)}>
+                  <IoChatboxEllipses />
+                  Chat
+                </button>
+              </nav>
+              )}
+              
+            </div>
+            {!showChat ? (
+              <Summary summary={summary} handleSeekTo={handleSeekTo}></Summary>
             ) : (
-              <p className="text-white">Failed to generate sections</p>
+              <Chat transcript={transcript}></Chat>
             )}
+            
           </div>
         ) : null}
+        
       </div>
     </main>
   );
