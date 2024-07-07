@@ -11,6 +11,7 @@ Here’s what it offers:
 - Accessibility: VidBite makes content more accessible by providing text summaries for videos, which can be particularly beneficial for users with hearing impairments or those in environments where they can’t play audio.
 
 ## How to run
+`docker compose up --build`
 
 ## How it was built
 Frontend:
@@ -18,3 +19,5 @@ Frontend:
 
 Backend:
 - FastAPI, Uvicorn, Python, llama.cpp (w Llama-3-8b-Instruct), whisper-timestamped 
+
+Deployed with Docker
