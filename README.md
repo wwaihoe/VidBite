@@ -1,7 +1,7 @@
 # VidBite
 It can be difficult to sift through long videos to get to the key points. 
-Whether it was educational content, quick tips, or even just trending topics, a tool that could quickly summarize and provide important information that users are seeking would be very helpful. 
-This app would not only save users time but also enhance their content consumption experience by making videos more accessible and digestible.
+Whether it is educational content, quick tips, or even just trending topics, a tool that could quickly summarize and provide important information that users are seeking would be very helpful. 
+VidBite aims to save users time and enhance their content consumption experience by transforming videos into bite-sized, easily digestible and accessible summaries, sections and answers to queries.
 
 ![Screenshot 2024-07-07 181612](https://github.com/wwaihoe/vidbite/assets/91514179/3eb0b1ad-c72e-46ea-8366-9c0a9bb26827)
 ![Screenshot 2024-07-07 181635](https://github.com/wwaihoe/vidbite/assets/91514179/04706c56-eb2f-4dbf-9da6-fe6f38f6cb67)
