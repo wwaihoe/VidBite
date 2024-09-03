@@ -6,8 +6,10 @@ import ReactPlayer from 'react-player'
 import { SiGoogledisplayandvideo360 } from "react-icons/si";
 import { IoChatboxEllipses } from "react-icons/io5";
 import { AiFillFileText } from "react-icons/ai";
+import { MdHistory } from "react-icons/md";
 import Summary from "./components/summary";
 import Chat from "./components/chat";
+import Link from 'next/link';
 
 
 // control aspect ratio of video player
@@ -39,11 +41,6 @@ export default function Home() {
   
   const playerRef = useRef<ReactPlayer>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
-
-  const testfunction = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSummary({summary: "This is a summary", sections_timestamps: [{timestamps: [0, 10], text: "This is a section", summary_short: "Topic", summary_full: "This is a summary"}, {timestamps: [10, 20], text: "This is a section", summary_short: "Topic", summary_full: "This is a summary"}, {timestamps: [20, 30], text: "This is a section", summary_short: "Topic", summary_full: "This is a summary"}]});
-  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];    
@@ -93,9 +90,12 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col place-items-center bg-gradient-to-br from-teal-500 to-rose-500 gap-3 text-base">
-      <div className="flex flex-row w-full place-items-center place-content-start px-20 py-14 gap-3 select-none">
-        <SiGoogledisplayandvideo360 className="text-4xl"/>
-        <h1 className="text-4xl font-header font-bold text-black">VidBite</h1>
+      <div className="flex flex-row w-full place-items-center place-content-start px-20 py-14 select-none justify-between">
+        <div className="flex flex-row place-items-center gap-3">
+          <SiGoogledisplayandvideo360 className="text-4xl"/>
+          <Link href="/"><h1 className="text-4xl font-header font-bold text-black">VidBite</h1></Link>
+        </div>
+        <Link href="/history" className='place-items-center p-2 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-white/70 border-2 border-white'><MdHistory className='text-3xl text-white'/></Link>
       </div>
       <div className="w-full flex-col gap-10 place-items-center place-content-center justify-between font-sans lg:flex p-8">
         <div className="flex w-3/4 justify-center flex-row gap-10 select-none">
