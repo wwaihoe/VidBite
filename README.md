@@ -10,7 +10,7 @@ See summary of video and skip to sections which you find interesting.\
 ![screenshot-1725377030953](https://github.com/user-attachments/assets/a96e2b06-9aca-45dc-9d42-1e5203999463)
 Ask a chatbot questions about the video.\
 ![screenshot-1725380783542](https://github.com/user-attachments/assets/803f3393-8abc-4414-9c54-771be1d63b3d)
-View history of generated summaries.\
+View history of generated summaries.
 
 ## What it does
 VidBite is designed to streamline your video viewing experience by summarizing videos, segmenting them into easy-to-digest sections and also allowing users to ask a chatbot assistant questions about the video. 
