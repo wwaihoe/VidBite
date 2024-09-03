@@ -3,9 +3,14 @@ It can be difficult to sift through long videos to get to the key points.
 Whether it is educational content, quick tips, or even just trending topics, a tool that could quickly summarize and provide important information that users are seeking would be very helpful. 
 VidBite aims to save users time and enhance their content consumption experience by transforming videos into bite-sized, easily digestible and accessible summaries, sections and answers to queries.
 
-![Screenshot 2024-07-07 181612](https://github.com/wwaihoe/vidbite/assets/91514179/3eb0b1ad-c72e-46ea-8366-9c0a9bb26827)
-![Screenshot 2024-07-07 181635](https://github.com/wwaihoe/vidbite/assets/91514179/04706c56-eb2f-4dbf-9da6-fe6f38f6cb67)
-![Screenshot 2024-07-07 201339](https://github.com/wwaihoe/vidbite/assets/91514179/ad31b916-4b11-4b58-8e7a-0c050af0dd96)
+![Screenshot 2024-09-03 231341](https://github.com/user-attachments/assets/d4f4bdf9-806d-48c4-9454-fba329ee773f)
+Upload videos to summarize and gain insights to.\
+![screenshot-1725376798688](https://github.com/user-attachments/assets/84da9bc3-2e55-46c8-be9d-9bf1b49f4c85)
+See summary of video and skip to sections which you find interesting.\
+![screenshot-1725377030953](https://github.com/user-attachments/assets/a96e2b06-9aca-45dc-9d42-1e5203999463)
+Ask a chatbot questions about the video.\
+![screenshot-1725380783542](https://github.com/user-attachments/assets/803f3393-8abc-4414-9c54-771be1d63b3d)
+View history of generated summaries.\
 
 ## What it does
 VidBite is designed to streamline your video viewing experience by summarizing videos, segmenting them into easy-to-digest sections and also allowing users to ask a chatbot assistant questions about the video. 
