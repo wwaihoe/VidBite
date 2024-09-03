@@ -35,6 +35,6 @@ Frontend:
 - Next.js, React, Typescript, Tailwind CSS
 
 Backend:
-- FastAPI, Uvicorn, Python, llama.cpp (w Llama-3-8b-Instruct), whisper-timestamped 
+- FastAPI, Uvicorn, Python, llama.cpp (w Llama-3-8b-Instruct), whisper-timestamped, PostgreSQL 
 
 Deployed with Docker
