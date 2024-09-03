@@ -5,10 +5,13 @@ VidBite aims to save users time and enhance their content consumption experience
 
 ![Screenshot 2024-09-03 231341](https://github.com/user-attachments/assets/d4f4bdf9-806d-48c4-9454-fba329ee773f)
 Upload videos to summarize and gain insights to.\
+&nbsp;
 ![screenshot-1725376798688](https://github.com/user-attachments/assets/84da9bc3-2e55-46c8-be9d-9bf1b49f4c85)
 See summary of video and skip to sections which you find interesting.\
+&nbsp;
 ![screenshot-1725377030953](https://github.com/user-attachments/assets/a96e2b06-9aca-45dc-9d42-1e5203999463)
 Ask a chatbot questions about the video.\
+&nbsp;
 ![screenshot-1725380783542](https://github.com/user-attachments/assets/803f3393-8abc-4414-9c54-771be1d63b3d)
 View history of generated summaries.
 
