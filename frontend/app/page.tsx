@@ -91,10 +91,10 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col place-items-center bg-gradient-to-br from-teal-500 to-rose-500 gap-3 text-base">
       <div className="flex flex-row w-full place-items-center place-content-start px-20 py-14 select-none justify-between">
-        <div className="flex flex-row place-items-center gap-3">
+        <Link href="/" className="flex flex-row place-items-center gap-3">
           <SiGoogledisplayandvideo360 className="text-4xl"/>
-          <Link href="/"><h1 className="text-4xl font-header font-bold text-black">VidBite</h1></Link>
-        </div>
+          <h1 className="text-4xl font-header font-bold text-black">VidBite</h1>
+        </Link>
         <Link href="/history" className='place-items-center p-2 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-white/70 border-2 border-white'><MdHistory className='text-3xl text-white'/></Link>
       </div>
       <div className="w-full flex-col gap-10 place-items-center place-content-center justify-between font-sans lg:flex p-8">

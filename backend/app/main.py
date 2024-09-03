@@ -70,6 +70,9 @@ class SummaryRequest(BaseModel):
 class SectionsRequest(BaseModel):
     summary_id: int
 
+class DeleteRequest(BaseModel):
+    summary_id: int
+
 class Summary(BaseModel):
     id: int
     title: str
@@ -161,14 +164,14 @@ def get_sections(request: SectionsRequest):
         sections.append({"id": section[0], "summary_id": section[1], "title": section[2], "start_timestamp": section[3], "end_timestamp": section[4], "text": section[5], "summary_short": section[6], "summary_full": section[7]})
     return {"sections": sections}
 
-@app.post("/delete")
-def delete_summary(request: SummaryRequest):
+@app.delete("/delete")
+def delete_summary(request: DeleteRequest):
     cur = conn.cursor()
-    cur.execute("DELETE FROM summaries WHERE id = %s", (request.summary_id,))
     cur.execute("DELETE FROM sections WHERE summary_id = %s", (request.summary_id,))
+    cur.execute("DELETE FROM summaries WHERE id = %s", (request.summary_id,))
     conn.commit()
     cur.close()
-    return {"message": "Summary deleted"}
+    return {"ok": True}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

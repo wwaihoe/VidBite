@@ -16,7 +16,6 @@ RUN apt install -y libpq-dev
 
 WORKDIR /app
 
-COPY ./app ./app
 COPY ./requirements.txt .
 
 RUN python3 -m pip install --upgrade pip
@@ -26,5 +25,7 @@ RUN pip3 install torch torchvision torchaudio --index-url https://download.pytor
 RUN pip3 install --no-cache-dir --upgrade -r requirements.txt
 
 RUN CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
+
+COPY ./app ./app
 
 CMD ["fastapi", "run"]
