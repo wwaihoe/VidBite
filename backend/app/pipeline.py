@@ -55,7 +55,7 @@ class VideoSummarizer:
     # Summarize transcript
     summarize_prompt = f"""<|start_header_id|>user<|end_header_id|>
    
-<instruction>Summarise the following transcript of a video: <transcript>{transcript}</transcript></instruction><|eot_id|> 
+<instruction>Summarise the video: <transcript>{transcript}</transcript></instruction><|eot_id|> 
 <|start_header_id|>assistant<|end_header_id|>
 
 <summary>"""
@@ -68,7 +68,7 @@ class VideoSummarizer:
     # Generate sections
     segment_prompt = f"""<|start_header_id|>user<|end_header_id|>
    
-<instruction>Split the following transcript into suitable sections verbatim with these xml tags: "<section></section>" to demarcate each section in the transcript.
+<instruction>Split the following video into suitable sections verbatim with these xml tags: "<section></section>" to demarcate each section in the video.
 <transcript>{transcript}</transcript>Each section should contain only the exact text found in the transcript.</instruction><|eot_id|> 
 <|start_header_id|>assistant<|end_header_id|>
 
@@ -108,7 +108,7 @@ class VideoSummarizer:
         # Generate summaries for each section
         summarize_short_prompt = f"""<|start_header_id|>user<|end_header_id|>
    
-<instruction>Summarise the following transcript into a few words: <transcript>{section}</transcript></instruction><|eot_id|> 
+<instruction>Summarise the following video into a few words: <transcript>{section}</transcript></instruction><|eot_id|> 
 <|start_header_id|>assistant<|end_header_id|>
 
 <summary>"""
@@ -118,7 +118,7 @@ class VideoSummarizer:
         # Generate summaries for each section
         summarize_full_prompt = f"""<|start_header_id|>user<|end_header_id|>
    
-<instruction>Summarise the following transcript: <transcript>{section}</transcript></instruction><|eot_id|> 
+<instruction>Summarise the following video: <transcript>{section}</transcript></instruction><|eot_id|> 
 <|start_header_id|>assistant<|end_header_id|>
 
 <summary>"""
@@ -148,5 +148,5 @@ class VideoSummarizer:
     return sections_timestamps
 
 
-video_summarizer = VideoSummarizer(transcript_model_str="medium", llm_repo_id="bartowski/Meta-Llama-3-8B-Instruct-GGUF", llm_filename="Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
+video_summarizer = VideoSummarizer(transcript_model_str="medium", llm_repo_id="bartowski/Meta-Llama-3.1-8B-Instruct-GGUF", llm_filename="Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf")
 

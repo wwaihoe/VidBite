@@ -10,8 +10,8 @@ import Summary from "./components/summary";
 import Chat from "./components/chat";
 
 
-// Change this to false if you want a wide video player
-const tall = true;
+// control aspect ratio of video player
+const tall = false
 const vidDimensions = tall? {"width": 360, "height": 640}: {"width": 854, "height": 480};
 
 const backendURL = "http://localhost:8000";
@@ -37,7 +37,6 @@ export default function Home() {
   const [summary, setSummary] = useState<VideoSummary | null>(null);
   const [transcript, setTranscript] = useState<string>("");
   
-
   const playerRef = useRef<ReactPlayer>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
