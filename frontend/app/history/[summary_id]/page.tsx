@@ -49,12 +49,11 @@ export default function Page({ params }: { params: { summary_id: number } }) {
     const getSummary = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${backendURL}/summary`, {
-          method: "POST",
+        const response = await fetch(`${backendURL}/summary/${params.summary_id}`, {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ summary_id: params.summary_id }),
+          }
         });
         if (!response.ok) {
           throw new Error("Failed to fetch summary");
@@ -73,12 +72,11 @@ export default function Page({ params }: { params: { summary_id: number } }) {
 
     const getSections = async () => {
       try {
-        const response = await fetch(`${backendURL}/sections`, {
-          method: "POST",
+        const response = await fetch(`${backendURL}/sections/${params.summary_id}`, {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ summary_id: params.summary_id }),
+          }
         });
         if (!response.ok) {
           throw new Error("Failed to fetch sections");

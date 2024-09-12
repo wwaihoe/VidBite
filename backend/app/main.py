@@ -64,12 +64,6 @@ class ChatRequest(BaseModel):
     query: str
     transcript: str
 
-class SummaryRequest(BaseModel):
-    summary_id: int
-
-class SectionsRequest(BaseModel):
-    summary_id: int
-
 class DeleteRequest(BaseModel):
     summary_id: int
 
@@ -144,25 +138,31 @@ def get_summaries():
         summaries.append({"id": summary[0], "title": summary[1], "summary": summary[2]}) 
     return {"summaries": summaries}
 
-@app.post("/summary")
-def get_summary(request: SummaryRequest):
+@app.get("/summary/{summary_id}")
+def get_summary(summary_id: int):
     cur = conn.cursor()
-    cur.execute("SELECT * FROM summaries WHERE id = %s", (request.summary_id,))
+    cur.execute("SELECT * FROM summaries WHERE id = %s", (summary_id,))
     result = cur.fetchone()
     cur.close()
-    summary = {"id": result[0], "title": result[1], "summary": result[2]}
-    return {"summary": summary}
+    if result is None:
+        return {"summary": None}
+    else:
+        summary = {"id": result[0], "title": result[1], "summary": result[2]}
+        return {"summary": summary}
 
-@app.post("/sections")
-def get_sections(request: SectionsRequest):
+@app.get("/sections/{summary_id}")
+def get_sections(summary_id: int):
     cur = conn.cursor()
-    cur.execute("SELECT * FROM sections WHERE summary_id = %s", (request.summary_id,))
+    cur.execute("SELECT * FROM sections WHERE summary_id = %s", (summary_id,))
     result = cur.fetchall()
     cur.close()
-    sections = []
-    for section in result:
-        sections.append({"id": section[0], "summary_id": section[1], "title": section[2], "start_timestamp": section[3], "end_timestamp": section[4], "text": section[5], "summary_short": section[6], "summary_full": section[7]})
-    return {"sections": sections}
+    if result is None:
+        return {"sections": None}
+    else:
+        sections = []
+        for section in result:
+            sections.append({"id": section[0], "summary_id": section[1], "title": section[2], "start_timestamp": section[3], "end_timestamp": section[4], "text": section[5], "summary_short": section[6], "summary_full": section[7]})
+        return {"sections": sections}
 
 @app.delete("/delete")
 def delete_summary(request: DeleteRequest):
